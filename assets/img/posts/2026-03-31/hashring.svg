@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="518px" preserveAspectRatio="none" style="width:412px;height:518px;" version="1.1" viewBox="0 0 412 518" width="412px" zoomAndPan="magnify"><defs><filter height="300%" id="fl4n9peg352xl" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><!--MD5=[9756f2ddce874401e480de2f329f0dc6]
+cluster Hash Space [0, 2^64)--><rect fill="#FFFFFF" filter="url(#fl4n9peg352xl)" height="483" style="stroke: #000000; stroke-width: 1.5;" width="197" x="204.5" y="24"/><text fill="#000000" font-family="Courier" font-size="14" font-weight="bold" lengthAdjust="spacingAndGlyphs" textLength="160" x="223" y="38.9951">Hash Space [0, 2^64)</text><!--MD5=[770389ab9df153645bc6ef28055eb2b5]
+entity A--><polygon fill="#F8F8F8" filter="url(#fl4n9peg352xl)" points="239.5,69,249.5,59,367.5,59,367.5,111.5938,357.5,121.5938,239.5,121.5938,239.5,69" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="357.5" x2="366.5" y1="69" y2="60"/><line style="stroke: #000000; stroke-width: 1.5;" x1="239.5" x2="357.5" y1="69" y2="69"/><line style="stroke: #000000; stroke-width: 1.5;" x1="357.5" x2="357.5" y1="69" y2="121.5938"/><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="254.5" y="91.9951">Node A</text><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="88" x="254.5" y="108.292">hash=0x1A3F</text><!--MD5=[b2d39259b6aeabc16b394deeb0238426]
+entity B--><polygon fill="#F8F8F8" filter="url(#fl4n9peg352xl)" points="220.5,192,230.5,182,348.5,182,348.5,234.5938,338.5,244.5938,220.5,244.5938,220.5,192" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="338.5" x2="347.5" y1="192" y2="183"/><line style="stroke: #000000; stroke-width: 1.5;" x1="220.5" x2="338.5" y1="192" y2="192"/><line style="stroke: #000000; stroke-width: 1.5;" x1="338.5" x2="338.5" y1="192" y2="244.5938"/><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="235.5" y="214.9951">Node B</text><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="88" x="235.5" y="231.292">hash=0x4C2E</text><!--MD5=[16fab723be418f7eaf2ea4bd895a8e51]
+entity C--><polygon fill="#F8F8F8" filter="url(#fl4n9peg352xl)" points="220.5,315,230.5,305,348.5,305,348.5,357.5938,338.5,367.5938,220.5,367.5938,220.5,315" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="338.5" x2="347.5" y1="315" y2="306"/><line style="stroke: #000000; stroke-width: 1.5;" x1="220.5" x2="338.5" y1="315" y2="315"/><line style="stroke: #000000; stroke-width: 1.5;" x1="338.5" x2="338.5" y1="315" y2="367.5938"/><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="235.5" y="337.9951">Node C</text><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="88" x="235.5" y="354.292">hash=0x7B01</text><!--MD5=[118f42602524ad482f02b27ef22fc383]
+entity D--><polygon fill="#F8F8F8" filter="url(#fl4n9peg352xl)" points="238.5,438,248.5,428,366.5,428,366.5,480.5938,356.5,490.5938,238.5,490.5938,238.5,438" style="stroke: #000000; stroke-width: 1.5;"/><line style="stroke: #000000; stroke-width: 1.5;" x1="356.5" x2="365.5" y1="438" y2="429"/><line style="stroke: #000000; stroke-width: 1.5;" x1="238.5" x2="356.5" y1="438" y2="438"/><line style="stroke: #000000; stroke-width: 1.5;" x1="356.5" x2="356.5" y1="438" y2="490.5938"/><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="48" x="253.5" y="460.9951">Node D</text><text fill="#000000" font-family="Courier" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="88" x="253.5" y="477.292">hash=0xBE44</text><path d="M6,63 L6,118.3984 L187,118.3984 L187,73 L177,63 L6,63 " fill="#ECECEC" filter="url(#fl4n9peg352xl)" style="stroke: #383838; stroke-width: 1.0;"/><path d="M177,63 L177,73 L187,73 L177,63 " fill="#ECECEC" style="stroke: #383838; stroke-width: 1.0;"/><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="136" x="12" y="80.0669">Key K maps to the</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="160" x="12" y="95.1997">first node clockwise</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="96" x="12" y="110.3325">from hash(K)</text><!--MD5=[5e2eec62a50b26b6b0db6c12e4ee289c]
+link A to B--><!--MD5=[cd25d8247324207f828a4db9f58ed69d]
+link B to C--><!--MD5=[95ca888c4bb7ed1df160562281720a5c]
+link C to D--><!--MD5=[dd279d86604081708109ffa5c10dbded]
+link D to A--><!--MD5=[be9fc5e2243f81aa9c59686d970ecb97]
+@startuml
+skinparam monochrome true
+skinparam defaultFontName Courier
+skinparam backgroundColor white
+
+rectangle "Hash Space [0, 2^64)" {
+  node "Node A\nhash=0x1A3F" as A
+  node "Node B\nhash=0x4C2E" as B
+  node "Node C\nhash=0x7B01" as C
+  node "Node D\nhash=0xBE44" as D
+}
+
+note "Key K maps to the\nfirst node clockwise\nfrom hash(K)" as rule
+
+A -[hidden]- B
+B -[hidden]- C
+C -[hidden]- D
+D -[hidden]- A
+
+@enduml
+
+PlantUML version 1.2020.02(Sun Mar 01 11:22:07 WAT 2020)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 21.0.10+7-Ubuntu-124.04
+Operating System: Linux
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

@@ -1,8 +1,20 @@
 ---
-# the default layout is 'page'
-icon: fas fa-info-circle
+title: About
+layout: page
 order: 4
+icon: fas fa-circle-info
+permalink: /about/
 ---
 
-> Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
-{: .prompt-tip }
+Mainframe developer. Malware researcher. Distributed systems enthusiast.
+
+### Focus Areas
+
+- Mainframe internals (z/OS, JCL, REXX, HLASM, COBOL)
+- Reverse engineering & evasion techniques
+- Kernel research
+- Distributed systems architecture
+
+### Contact
+
+Find me on [GitHub](https://github.com/czeti).
