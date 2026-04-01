@@ -41,9 +41,9 @@ This last point is where most sharding discussion go wrong. They present a hash-
 shard_id = hash(key) % num_shards
 ```
 
-And then never mention that this function is incredibly unstable, when `num_shards` changes, nearly every key remaps. For a distributed cache, that means a thundering herd of cache misses. For a distributed database, it means a migration event that could require the reordering of majority of your data. This instability is more built into the function, as a property of the function itself, rather than a just a bug you can engineer around.
+And then never mention that this function is incredibly *unstable*, when `num_shards` changes, nearly every key remaps. For a distributed cache, that means a thundering herd of cache misses. For a distributed database, it means a migration event that could require the reordering of majority of your data. This instability is more built into the function, as a property of the function itself, rather than a just a bug you can engineer around.
 
-The solution to this is consistent hashing, which I will explain in [Part III](#part-iii). But first let us look at the in-process case, which most discussions ignore entirely.
+The solution to this is *consistent* hashing, which I will explain in [Part III](#part-iii). But first let us look at the in-process case, which most discussions ignore entirely.
 
 ---
 ## Part II: In-Process Sharding and the Contention Problem
@@ -102,7 +102,7 @@ This works but it creates a **false sharing** trap on modern hardware.
 
 ### The Cache Line Problem
 
- A modern CPU Cache line is 64 bytes. When a core accesses memory it loads the entire 64 byte line containing that address. If two threads are writing to different memory locations that happen to live in the same cache line, they are effectively writing to the "same" thing from the cache coherency  protocol's perspective. Every write forces the other cores to invalidate their cached copy of that line, even though the logical data is separate. This is called **false sharing** and it will absolutely destroy your sharding gains on heavy workloads.
+ A modern CPU Cache line is 64 bytes. When a core accesses memory it loads the entire 64 byte line containing that address. If two threads are writing to different memory locations that happen to live in the same cache line, they are effectively writing to the *same* thing from the cache coherency  protocol's perspective. Every write forces the other cores to invalidate their cached copy of that line, even though the logical data is separate. This is called **false sharing** and it will absolutely destroy your sharding gains on heavy workloads.
 
 The `Vec<RwLock<HashMap<K, V>>>` layout is problematic. The `RwLock` metadata object sit adjacent in memory. Under contention, cores thrash the cache lines containing those lock words.
 
@@ -133,7 +133,7 @@ This is a legitimate optimisation. The division modulo is genuinely expensive. I
 
 How many shards? The rule of thumb is at least 4x your expected thread count. With 8 threads and 32 shards, the probability that two randomly chosen operations contend on the same shard is 1/32, or about 3%. With 8 threads and 8 shards, it is 1/8, or 12.5%. The contention probability decreases roughly as 1/N for uniform key distribution.
 
-But here is the thing the rule of thumb does not tell you: If your key distribution is not uniform, you can have 1024 shards and one shard receiving 80% of the traffic. The shard count is not the whole story, the hash function quality and the key entropy are equally as important.
+But here is the thing the rule of thumb does not tell you: If your key distribution is not uniform, you can have 1024 shards and one shard receiving 80% of the traffic. The shard count is not the whole story, the hash function *quality* and the key *entropy* are equally as important.
 
 ---
 
@@ -151,7 +151,7 @@ For internal sharding, where the keyspace property is not attacker-controlled, t
 - **XxHash / xx3h**: Excellent for bulk hashing, strong avalanche behaviour, widely used in distributed systems for partitioned routing.
 - **Rendezous Hashing (HRW)**: Not a routing function per se, more of a routing strategy. For each shard you compute hash(key + shard_id) and route to the shard with the highest value. This has excellent uniformity and is remarkably stable under topology changes: when a shard is removed, only keys assigned to that shard need to be redistributed, I will return to this.
 
-The avalanche effect matters for sharding. A good hash functions ensures that a single bit change in the hash alters approximately half of its output bits. Without this property keys with common prefixes will cluster into the same shard, creating hotspots.
+The avalanche effect matters for sharding. A good hash functions ensures that a single bit change in the hash alters approximately half of its output bits. Without this property keys with common prefixes will cluster into the same shard, creating *hotspots*.
 
 You can verify your hash function's avalanche behaviour empirically:
 
@@ -189,7 +189,7 @@ Consistent hashing solves this. The classic formulation uses a hash ring:
 
 More precisely: you hash each node to a position in a circular integer space (0, 2^64). To route a key, you hash the key to the same space, then walk clockwise for when you find the first node. When a node joins, it takes ownership of a contiguous arc of the ring; all other nodes are unaffected. When a node leaves, its arc is absorbed by its clockwise successor.
 
-The problem with this naive formulation is that `N` nodes does not distribute uniformly across a random ring. You can get severe imbalance with one node owning 40% of the ring and another node owning 3%.
+The problem with this naive formulation is that `N` nodes does not distribute uniformly across a random ring. You can get *severe* imbalance with one node owning 40% of the ring and another node owning 3%.
 
 The solution for this is **virtual nodes** or vnodes. Each physical node is represented by multiple positions on the ring, typically by hashing node_id + replica_index with 150 vnodes per physical node, the distribution converges on uniformity by the **law of large numbers**.
 
@@ -256,11 +256,11 @@ impl<N: Clone + Hash + Debug> HashRing<N> {
 }
 ```
 
-The `BTreeMap` gives us `range` which is the efficient "find first key >= h" operation that the clockwise walk requires. This is O(log n) per look up where n is the total number of vnode entries. For 10 physical nodes with 150 vnodes each that is about 1500 entries and 11 comparisons per entry. Perfectly acceptable.
+The `BTreeMap` gives us `range` which is the efficient "find first key >= h" operation that the clockwise walk requires. This is `O(log n)` per look up where n is the total number of vnode entries. For 10 physical nodes with 150 vnodes each that is about 1500 entries and 11 comparisons per entry. Perfectly acceptable.
 
 ### Rendezvous Hashing as an Alternative
 
-Consistent hashing with a hash ring has a subtlety that bites people: the `BTreeMap` operation is not cache friendly for large rings, and the vnode count needs tuning. Rendezvous hashing, also known as random weight hashing (HRW) achieves the same stability guarantee with a simpler structure at the cost of O(n) lookup time, where N is the number of physical nodes.
+Consistent hashing with a hash ring has a subtlety that bites people: the `BTreeMap` operation is not cache friendly for large rings, and the vnode count needs tuning. Rendezvous hashing, also known as random weight hashing (HRW) achieves the same stability guarantee with a simpler structure at the cost of `O(n)` lookup time, where `N` is the number of physical nodes.
 
 ```rust
 use std::hash::DefaultHasher;  
@@ -301,13 +301,13 @@ This is the client-side routing pattern described in the Dynamo paper. A partiti
 
 Everything so far has been the easy part. The hard part is what happens when a single logical operation needs to touch more than one shard.
 
-Let us consider a bank transfer: debit account A (on shard 2) and credit account b (on shard 7). These are two separate shard operations. If the debit succeeds and the system crashes before the credit, you have destroyed money. If you credit debiting and the debit fails, you have created money, both options are unacceptable.
+Let us consider a bank transfer: debit account a (on shard 2) and credit account b (on shard 7). These are two separate shard operations. If the debit succeeds and the system crashes before the credit, you have destroyed money. If you credit before debiting and the debit fails, you have created money, both options are unacceptable.
 
 This is the cross shard transaction problem, and it does not have a cheap solution.
 
 ![Cross-shard transaction problem](/assets/img/posts/2026-03-31/cross-shard-transaction-problem.svg)
 
-Two phase commit (2PC) is the classic solution. In phase one, the coordinator asks each participant to prepare: acquire the necessary locks and write the operation to a write ahead log, but do not apply it. In phase two, if all participants vote yes, the coordinator writes a commit record and asks all participants to apply.
+Two phase commit (2PC) is the classic solution. In phase one, the coordinator asks each participant to prepare: acquire the necessary locks and write the operation to a write ahead log, but does not apply it. In phase two, if *all* participants vote yes, the coordinator writes a commit record and asks all participants to apply.
 
 This protocol is correct, but has two serious problems.
 
@@ -315,7 +315,7 @@ First, it is blocking, if the coordinator crashes after phase one but before pha
 
 Second, it adds a full round trip to every cross shard write. For operations that touch many shards, the latency compounds.
 
-The modern alternative is the Saga pattern. A saga decomposes a multi-step operation into a sequence of local transactions, each with a corresponding compensating transaction that undoes it. If any step fails, the saga executes the compensating transaction in reverse order.
+The modern alternative is the *Saga* pattern. A saga decomposes a multi-step operation into a sequence of local transactions, each with a corresponding compensating transaction that undoes it. If any step fails, the saga executes the compensating transaction in reverse order.
 
 For the bank transfer:
 
@@ -332,14 +332,14 @@ For most in-process sharding scenarios, you can avoid cross shard operations by 
 
 ## Part VII: Shard Key Design
 
-The shard key is the field or composite of fields used to route a record to its shard. This choice is the most consequential decision in your sharding design, and it is almost always made too quickly.
+The shard key is the field or composite of fields used to route a record to its shard. This choice is the most consequential decision in your sharding design, and it is almost always often made too quickly.
 
 The properties you want from a shard key:
 
 - **High cardinality**: If your key can only take 10 distinct values and you have 16 shards, most shards are empty. This seems obvious but gets violated in subtle ways: using `user_id % 10` as a shard key when you have 16 shards means only 10 shards receive traffic.
 - **Uniform distribution**: the values of the key should be approximately uniformly distributed across the keyspace. Sequential integer IDs fail this criterion when the range of live data is much smaller than the the theoretical maximum.
 - **Query Locality**: operations that are frequently performed together should ideally live on the same shard. A user's session data and profile data, if queried in a hot path, should shard by `user_id` so they co-locate.
-- **Stability**:a key changes means a record must migrate between shards. This is expensive . User IDs and UUIDs are good shard keys. User email addresses are poor ones (they change on account rename, or marriage).
+- **Stability**: a key change means a record must migrate between shards. This is expensive . User IDs and UUIDs are good shard keys. User email addresses are poor ones (they change on account rename, or  marriage).
 
 The worst anti pattern is choosing a key that creates temporal hotspots. If you shard by `timestamp` or `date`, all writes go to the shard containing the current time window. That shard is a hotspot; the others are cold. This pattern appears constantly in time series systems designed by people who were thinking about range queries (where time-based sharding makes sense) without thinking about write distribution.
 
@@ -402,12 +402,14 @@ impl<K: Hash + Eq, V, const N: usize> TypedShard<K, V, N> {
   
     pub fn get(&self, key: &ShardedKey<K, N>) -> Option<&V> {  
         self.data.get(&key.inner)  
-    }}  
+    }
+}  
   
 impl<K: Hash + Eq, V, const N: usize> Default for TypedShard<K, V, N> {  
     fn default() -> Self {  
         Self::new()  
-    }}  
+    }
+}  
   
 fn compute_shard_index<K: Hash>(key: &K, num_shards: usize) -> usize {  
     let mut hasher = DefaultHasher::new();  
@@ -428,15 +430,15 @@ impl<K: Hash, const TOTAL_SHARDS: usize, const SHARD_IDX: usize> ShardedKey<K, T
 }
 ```
 
-The broader principle is worth generalising: wherever you have a partitioned state, you can use Rust's type system to make the partition boundaries visible. The newtype pattern, phantom types, and const generics, form a partitioning vocabulary that has no equivalent in Java, C++, or Go. As far as I know.
+The broader principle is worth generalising: wherever you have a partitioned state, you can use Rust's type system to make the partition boundaries visible. The newtype pattern, phantom types, and const generics, form a partitioning vocabulary that has no equivalent in Java, C++, or Go.
 
 ---
 
 ## Part IX: Sharing in an Async Context
 
-Modern Rust services are built on async runtimes, typically tokio. Sharding composes naturally with the actor model that Tokio enables.
+Modern Rust services are built on async runtimes, typically `tokio`. Sharding composes naturally with the actor model that Tokio enables.
 
-The pattern is: one actor per shard, each with its own `tokio::sync::mpsc` channel. The router hashes the key and sends the message to the appropriate actor's channel. Each actor processes its own queue sequentially (or with bounded parallelism). so no locking is required within a shard at all.
+The pattern is: one actor per shard, each with its own `tokio::sync::mpsc` channel. The router hashes the key and sends the message to the appropriate actor's channel. Each actor processes its own queue *sequentially* (or with bounded parallelism). so no locking is required within a shard at all.
 
 ![Sharing in an Async Context](/assets/img/posts/2026-03-31/async-context.svg)
 
@@ -522,7 +524,7 @@ where
 }
 ```
 
-This pattern scales remarkably well under async workloads because Tokio can schedule shard actors across its thread pool. The backpressure is built in via the bounded channel capacity. If a shard's channel life fills up, the sender yields, naturally throttling traffic to hot shards.
+This pattern scales remarkably well under async workloads because Tokio can schedule shard actors across its thread pool. The *backpressure* is built in via the bounded channel capacity. If a shard's channel life fills up, the sender yields, naturally throttling traffic to hot shards.
 
 The tradeoff vs lock based sharding: each operation has the overhead of channel allocation (the `oneshot` channel for reads) and a task context switch. For very low-latency-in-process operation, a cache padded `RwLock` will outperform the actor model. For workloads where each shard operation involves I/O or substantial computation, the actor model wins because it integrates naturally with async and does not hold during awaits.
 
@@ -557,9 +559,20 @@ The operational discipline requires:
 
 Sharding is a partitioning discipline that applies whenever you have a keyspace, state distributed across that keyspace, and a performance or scalability reason to avoid serialising the whole of it. The principles transfer from distributed key-value stores to in-process concurrent maps to async actor systems to connection pools.
 
-Rust is an unusually good language for implementing these patterns for reasons that go beyond performance. The ownership model makes the isolation guarantees of sharding explicit and enforceable. The type system, through phantom types and const generics, allows you to make shard boundaries visible in your APIs rather than hiding in runtime logic. The async runtime integrates naturally with actor model sharding. The unsafe-free path to cache-line-aware data structures exists through `repr(align)` and crossbeam-utils.
+Rust is an unusually good language for implementing these patterns for reasons that go beyond performance. The ownership model makes the isolation guarantees of sharding explicit and enforceable. The type system, through phantom types and const generics, allows you to make shard boundaries visible in your APIs rather than hiding in your runtime logic. The async runtime integrates naturally with actor model sharding. The unsafe-free path to cache-line-aware data structures exists through `repr(align)` and crossbeam-utils.
 
-The things that would hurt you if you ignore them: hash function quality, false sharing, cross shard transactions, and routing instability under topology changes. None of which are exotic concerns, and are just normal operating conditions of any long lasting sharded system to watch out for. 
+The things that could hurt you if you ignore them: hash function quality, false sharing, cross shard transactions, and routing instability under topology changes. None of which are exotic concerns, and are just normal operating conditions of any long lasting sharded system. 
+
+---
+## References
+
+1. [Dynamo: Amazon’s Highly Available Key-value Store](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf): DeCandia et al.
+2. [Consistent Hashing and Random Trees](https://www.cs.princeton.edu/courses/archive/fall09/cos518/papers/chash.pdf): Karger et al.
+3. [Rust's std::collections::HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html) documentation.
+4. [hashbrown crate](https://docs.rs/hashbrown/latest/hashbrown/) documentation.
+5. [DashMap](https://github.com/xacrimon/dashmap) source code.
+6. [Sagas](https://www.cs.cornell.edu/andru/cs711/2002fa/reading/sagas.pdf): Garcia-Molina & Salem.
+7. [Computer Architecture: A Quantitative Approach](https://unidel.edu.ng/focelibrary/books/COMPUTER%20ARCHICTECTURE.pdf): Hennessy & Patterson.
 
 Thank you for reading!
 
